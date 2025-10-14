@@ -2,17 +2,15 @@ package ua.opnu;
 
 
 public class TimeSpan {
-    private int hours;
-    private int minutes;
+        private int hours;
+        private int minutes;
 
     TimeSpan(int hours, int minutes) {
-        if (hours < 0 || minutes < 0 || minutes > 59) {
-            this.hours = 0;
-            this.minutes = 0;
-        } else {
+            if (hours < 0 || minutes < 0 || minutes > 59)
+                return; //throw new IllegalArgumentException("Hours and minutes can`t be less than 0.");
+
             this.hours = hours;
             this.minutes = minutes;
-        }
     }
 
     int getHours() {
@@ -24,12 +22,13 @@ public class TimeSpan {
     }
 
     void add(int hours, int minutes) {
-        if (hours < 0 || minutes < 0 || minutes > 59) {
-            return; // ігноруємо неправильні аргументи
-        }
-        int totalMinutes = getTotalMinutes() + (hours * 60 + minutes);
-        this.hours = totalMinutes / 60;
-        this.minutes = totalMinutes % 60;
+        if (hours < 0 || minutes < 0 || minutes > 59)
+            return;
+
+        this.hours += hours;
+        this.minutes += minutes;
+        this.hours += this.minutes / 60;
+        this.minutes = this.minutes % 60;
     }
 
     void addTimeSpan(TimeSpan timespan) {
@@ -37,7 +36,7 @@ public class TimeSpan {
     }
 
     double getTotalHours() {
-        return hours + minutes / 60.0;
+        return (hours * 60 + minutes) / 60.0;
     }
 
     int getTotalMinutes() {
@@ -45,24 +44,25 @@ public class TimeSpan {
     }
 
     void subtract(TimeSpan span) {
-        int totalCurrent = getTotalMinutes();
-        int totalOther = span.getTotalMinutes();
+        int currentTimeSpanInMinutes = hours * 60 + minutes;
+        int incomingTimeSpanInMinutes = span.getHours() * 60 + span.getMinutes();
 
-        if (totalOther > totalCurrent) {
-            return; // нічого не змінюємо
-        }
+        if (incomingTimeSpanInMinutes > currentTimeSpanInMinutes)
+            return;
+            //throw new IllegalArgumentException("Incoming TimeSpan is greater then current.");
 
-        int result = totalCurrent - totalOther;
-        this.hours = result / 60;
-        this.minutes = result % 60;
+        int total = currentTimeSpanInMinutes - incomingTimeSpanInMinutes;
+        hours = total / 60;
+        minutes = total % 60;
     }
 
     void scale(int factor) {
-        if (factor <= 0) {
-            return; // ігноруємо
-        }
-        int total = getTotalMinutes() * factor;
-        this.hours = total / 60;
-        this.minutes = total % 60;
+        if (factor <= 0)
+            return;
+
+        int scaledTimeSpanInMinutes = (hours * 60 + minutes) * factor;
+        hours = scaledTimeSpanInMinutes / 60;
+        minutes = scaledTimeSpanInMinutes % 60;
+
     }
 }
